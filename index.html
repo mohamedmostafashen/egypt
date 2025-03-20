@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>موقع تعليم الصم والبكم</title>
+    <style>
+        body { 
+            font-family: 'Cairo', sans-serif; 
+            text-align: center; 
+            direction: rtl; 
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 100%;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: white;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+        input, button {
+            padding: 10px;
+            font-size: 18px;
+            margin: 10px;
+            width: 80%;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        #video-container {
+            display: none;
+            margin-top: 20px;
+            text-align: center;
+        }
+        video {
+            width: 80%;
+            max-width: 600px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>تعلم لغة الإشارة</h1>
+        <input type="text" id="search" placeholder="اكتب كلمة...">
+        <button onclick="playWord()">بحث</button>
+        <div id="video-container">
+            <video id="video" disablepictureinpicture controlslist="nodownload nofullscreen noremoteplayback">
+                <source src="video.mp4" type="video/mp4">
+                متصفحك لا يدعم تشغيل الفيديو.
+            </video>
+        </div>
+    </div>
+
+    <script>
+        const letters = {
+            'أ': [0, 1.11], 'إ': [0, 1.11], 'آ': [0, 1.11], 'ا': [0, 1.11],
+            'ب': [1.12, 3], 'ت': [3, 5], 'ث': [5.10, 6.12], 'ج': [7.11, 8.08],
+            'ح': [10.10, 12.01], 'خ': [12.08, 12.12], 'د': [13.26, 14.02], 'ذ': [15.05, 16],
+            'ر': [17, 17.22], 'ز': [18.22, 19.14], 'س': [20.07, 21.22], 'ش': [22.16, 23],
+            'ص': [24.20, 25.16], 'ض': [25.16, 27.20], 'ط': [28.02, 29.28], 'ظ': [31, 31.16],
+            'ع': [32.17, 34.01], 'غ': [34.24, 35.18], 'ف': [39, 40.25], 'ق': [41.02, 42.20],
+            'ك': [43.09, 44.18], 'ل': [45.02, 46], 'م': [46.24, 47.20], 'ن': [49.04, 49.23],
+            'ه': [50.12, 51.05], 'ة': [50.12, 51.05], 'و': [51.17, 52.03], 'ي': [52.21, 53.08]
+        };
+
+        function playWord() {
+            let word = document.getElementById("search").value.trim();
+            let video = document.getElementById("video");
+            let videoContainer = document.getElementById("video-container");
+
+            if (word.length === 0) return;
+
+            let timestamps = [];
+            for (let char of word) {
+                if (letters[char]) {
+                    timestamps.push([...letters[char]]);
+                }
+            }
+
+            if (timestamps.length > 0) {
+                videoContainer.style.display = "block";
+                video.currentTime = timestamps[0][0];
+                video.play();
+
+                let index = 0;
+
+                video.ontimeupdate = function () {
+                    if (index < timestamps.length && video.currentTime >= timestamps[index][1]) {
+                        index++;
+                        if (index < timestamps.length) {
+                            video.currentTime = timestamps[index][0];
+                        } else {
+                            video.pause();
+                            videoContainer.style.display = "none";
+                        }
+                    }
+                };
+
+                video.onended = function () {
+                    videoContainer.style.display = "none";
+                };
+            }
+        }
+    </script>
+</body>
+</html>
